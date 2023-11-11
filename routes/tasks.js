@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const {
   getAllTasks,
+  getTaskBasedOnName,
   erectTask,
   updateTask,
   deleteTaskBasedOnID,
@@ -14,6 +15,9 @@ const {
 // });
 
 router.get("/", express.json(), getAllTasks);
+
+// GET method : perceive a specific task based on suppelmented name
+router.get("/:taskName", express.json(), getTaskBasedOnName);
 
 // POST method: create a new task to the storage
 router.post("/", express.json(), erectTask);

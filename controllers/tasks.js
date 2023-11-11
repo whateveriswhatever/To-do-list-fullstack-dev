@@ -21,6 +21,31 @@ const getAllTasks = async (req, res) => {
   }
 };
 
+const getTaskBasedOnName = async (req, res) => {
+  try {
+    const { taskName } = req.params;
+    const findOne = await TaskModel.findOne({ name: taskName });
+
+    if (!findOne) {
+      return res.status(404).send("The provided task name doesn't exist !");
+    }
+
+    res.status(200).json({
+      status: "success",
+      msg: "Found !",
+      data: findOne,
+    });
+  } catch (err) {
+    console.log(
+      `Oops !. There must be something went wrong -> Check here: ${err}`
+    );
+    res.status(500).json({
+      status: "success",
+      msg: "Failed to perceive all tasks from the database",
+    });
+  }
+};
+
 const erectTask = async (req, res) => {
   try {
     const { taskName } = req.body;
@@ -55,19 +80,18 @@ const erectTask = async (req, res) => {
 
 const updateTask = async (req, res) => {
   try {
-    const { taskNameParams } = req.params;
-    const { updatedTaskName, updateTaskStatus } = req.body;
+    const { taskIDParams } = req.params;
+    //const { updatedTaskName, updateTaskStatus } = req.body;
+    const { updatedTaskName } = req.body;
     console.log(req.params);
-    console.log(`taskNameParams : ${taskNameParams}`);
-    console.log(
-      `updatedTaskName: ${updatedTaskName} >><< updatedTaskStatus: ${updateTaskStatus}`
-    );
+    console.log(`taskIDParams : ${taskIDParams}`);
+    console.log(`updatedTaskName: ${updatedTaskName}`);
 
-    if (!taskNameParams) {
+    if (!taskIDParams) {
       return res.status(404).send("The provided task name doesn't exist !");
     }
 
-    let findOne = await TaskModel.findOne({ name: taskNameParams }).exec();
+    let findOne = await TaskModel.findById(taskIDParams).exec();
 
     console.log(`findOne : ${findOne}`);
 
@@ -77,10 +101,9 @@ const updateTask = async (req, res) => {
         .send("There is no task that matched your search !");
     }
 
-    const newOne = await TaskModel.findOneAndUpdate(
-      { name: taskNameParams },
-      { name: updatedTaskName, completed: updateTaskStatus }
-    );
+    const newOne = await TaskModel.findByIdAndUpdate(taskIDParams, {
+      name: updatedTaskName,
+    });
 
     res.status(200).json({
       status: "success",
@@ -163,6 +186,7 @@ const deleteTaskByOnTaskName = async (req, res) => {
 
 module.exports = {
   getAllTasks,
+  getTaskBasedOnName,
   erectTask,
   updateTask,
   deleteTaskBasedOnID,

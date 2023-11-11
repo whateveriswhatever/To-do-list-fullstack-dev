@@ -85,6 +85,9 @@ const Task: React.FC<ITask> = ({ keyID, name, status, date }) => {
   const [isHoveredEdit, setIsHoveredEdit] = useState(false);
   const [isHoveredDelete, setIsHoveredDelete] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [afterEditing, setAfterEditing] = useState("");
+  const [isDone, setIsDone] = useState(status);
+  const [doneStatus, setDoneStatus] = useState("Undone");
 
   useEffect(() => {
     console.log(isHoveredDelete);
@@ -96,12 +99,45 @@ const Task: React.FC<ITask> = ({ keyID, name, status, date }) => {
       style={{ flexDirection: "column", border: "1px solid #000" }}
       key={keyID}
     >
-      <div>{name}</div>
+      {isEditing ? (
+        <div>
+          <input
+            type="text"
+            name="newTaskName"
+            onChange={(e) => setAfterEditing(e.target.value)}
+          />
+        </div>
+      ) : (
+        <div>{name}</div>
+      )}
       <div>{date}</div>
       <div>
         <span className="flex flex-row">
-          <strong>Done: </strong>
-          {status ? (
+          <strong
+            onMouseEnter={() => {
+              if (doneStatus === "Undone") {
+                setDoneStatus("Done");
+              } else {
+                setDoneStatus("Undone");
+              }
+            }}
+            onMouseLeave={() => {
+              if (doneStatus === "Done") {
+                setDoneStatus("Undone");
+              } else {
+                setDoneStatus("Done");
+              }
+            }}
+            onClick={() => {
+              setIsDone(!isDone);
+              doneStatus === "Undone"
+                ? setDoneStatus("Done")
+                : setDoneStatus("Undone");
+            }}
+          >
+            {doneStatus}:{" "}
+          </strong>
+          {isDone ? (
             <svg
               style={{ color: "green" }}
               xmlns="http://www.w3.org/2000/svg"
@@ -153,9 +189,25 @@ const Task: React.FC<ITask> = ({ keyID, name, status, date }) => {
                   backgroundColor: isHoveredEdit ? "#98B4D4" : "#fff",
                   color: isHoveredEdit ? "#fff" : "#000",
                 }}
-                onClick={() => {
-                  console.log("Clicked on change");
-                  setIsEditing(false);
+                onClick={async () => {
+                  try {
+                    console.log("Clicked on change");
+                    setIsEditing(false);
+                    console.log(`afterEditing : ${afterEditing}`);
+                    console.log(`name : ${keyID}`);
+                    await axios
+                      .put(`http://localhost:5000/api/v1/tasks/${keyID}`, {
+                        updatedTaskName: afterEditing,
+                      })
+                      .then((response) => {
+                        console.log(`Changed successfully !`);
+                        console.log(response.data);
+                        setAfterEditing("");
+                      })
+                      .catch((err) => console.log(err));
+                  } catch (err) {
+                    console.log(err);
+                  }
                 }}
                 onMouseEnter={() => setIsHoveredEdit(true)}
                 onMouseLeave={() => setIsHoveredEdit(false)}
