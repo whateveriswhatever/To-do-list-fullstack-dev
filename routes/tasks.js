@@ -5,6 +5,7 @@ const {
   getTaskBasedOnName,
   erectTask,
   updateTask,
+  updateTaskStatusBasedOnID,
   deleteTaskBasedOnID,
   deleteTaskByOnTaskName,
 } = require("../controllers/tasks");
@@ -17,7 +18,7 @@ const {
 router.get("/", express.json(), getAllTasks);
 
 // GET method : perceive a specific task based on suppelmented name
-router.get("/:taskName", express.json(), getTaskBasedOnName);
+router.get("/specific/:taskName", express.json(), getTaskBasedOnName);
 
 // POST method: create a new task to the storage
 router.post("/", express.json(), erectTask);
@@ -25,6 +26,13 @@ router.post("/", express.json(), erectTask);
 // PUT method: update a new task from the storage based on id
 // router.put("/:taskNameParams", express.json(), updateTask);
 router.put("/:taskIDParams", express.json(), updateTask);
+
+// PUT method: update a task's status from the storage based on id
+router.put(
+  "/status_change/:taskIDParams",
+  express.json(),
+  updateTaskStatusBasedOnID
+);
 
 // DELETE method : delete a task from the storage based on id
 router.delete("/:taskIDParams", express.json(), deleteTaskBasedOnID);

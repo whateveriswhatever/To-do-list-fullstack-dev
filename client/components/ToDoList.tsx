@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-type TypeToDos = {
+export type TypeToDos = {
   _id: string;
   name: string;
   completed: boolean;
@@ -128,11 +128,28 @@ const Task: React.FC<ITask> = ({ keyID, name, status, date }) => {
                 setDoneStatus("Done");
               }
             }}
-            onClick={() => {
+            onClick={async () => {
               setIsDone(!isDone);
-              doneStatus === "Undone"
-                ? setDoneStatus("Done")
-                : setDoneStatus("Undone");
+              // doneStatus === "Undone"
+              //   ? setDoneStatus("Done")
+              //   : setDoneStatus("Undone");
+              if (doneStatus === "Undone") {
+                setDoneStatus("Done");
+                await axios.put(
+                  `http://localhost:5000/api/v1/tasks/status_change/${keyID}`,
+                  {
+                    newStatus: true,
+                  }
+                );
+              } else {
+                setDoneStatus("Undone");
+                await axios.put(
+                  `http://localhost:5000/api/v1/tasks/status_change/${keyID}`,
+                  {
+                    newStatus: false,
+                  }
+                );
+              }
             }}
           >
             {doneStatus}:{" "}
@@ -289,6 +306,7 @@ const Task: React.FC<ITask> = ({ keyID, name, status, date }) => {
                     .delete(`http://localhost:5000/api/v1/tasks/${keyID}`)
                     .then((response) => {
                       console.log(`Deleted task with ID : ${keyID}`);
+                      console.log(response);
                     })
                     .catch((err) => console.log(err));
                 } catch (err) {

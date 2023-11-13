@@ -24,6 +24,7 @@ const getAllTasks = async (req, res) => {
 const getTaskBasedOnName = async (req, res) => {
   try {
     const { taskName } = req.params;
+    console.log(`taskName : ${taskName}`);
     const findOne = await TaskModel.findOne({ name: taskName });
 
     if (!findOne) {
@@ -118,6 +119,36 @@ const updateTask = async (req, res) => {
   }
 };
 
+const updateTaskStatusBasedOnID = async (req, res) => {
+  try {
+    const { taskIDParams } = req.params;
+    const { newStatus } = req.body;
+
+    // console.log(`newStatus : ${newStatus}`);
+
+    const findOne = await TaskModel.findById(taskIDParams);
+
+    if (!findOne) {
+      return res.status(404).send("The provided task's ID doesn't exist !");
+    }
+
+    const newOne = await TaskModel.findByIdAndUpdate(taskIDParams, {
+      completed: newStatus,
+    });
+
+    res.status(200).json({
+      status: "success",
+      msg: "Updated successfully !",
+      data: newOne,
+    });
+  } catch (err) {
+    console.log(
+      `Oops !. There must be something went wrong -> Check here: ${err}`
+    );
+    res.status(500).json({ status: "failed", msg: err });
+  }
+};
+
 const deleteTaskBasedOnID = async (req, res) => {
   try {
     const { taskIDParams } = req.params;
@@ -189,6 +220,7 @@ module.exports = {
   getTaskBasedOnName,
   erectTask,
   updateTask,
+  updateTaskStatusBasedOnID,
   deleteTaskBasedOnID,
   deleteTaskByOnTaskName,
 };
