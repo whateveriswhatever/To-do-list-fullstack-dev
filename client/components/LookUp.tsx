@@ -95,7 +95,13 @@ const FilterResults: React.FC<IUserLookUpInput> = ({ data }) => {
     >
       {data !== undefined ? (
         <div style={{ border: "1px solid #000" }}>
-          <div>{data?.name}</div>
+          <div
+            style={{
+              textDecoration: data?.completed ? "line-through" : "none",
+            }}
+          >
+            {data?.name}
+          </div>
           <div>{data?.date}</div>
           <div style={{ display: "flex", flexDirection: "row" }}>
             Done:
