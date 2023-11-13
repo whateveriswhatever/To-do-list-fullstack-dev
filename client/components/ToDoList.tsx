@@ -108,7 +108,9 @@ const Task: React.FC<ITask> = ({ keyID, name, status, date }) => {
           />
         </div>
       ) : (
-        <div>{name}</div>
+        <div style={{ textDecoration: status ? "line-through" : "none" }}>
+          {name}
+        </div>
       )}
       <div>{date}</div>
       <div>
@@ -152,7 +154,8 @@ const Task: React.FC<ITask> = ({ keyID, name, status, date }) => {
               }
             }}
           >
-            {doneStatus}:{" "}
+            {/* {doneStatus}:{" "} */}
+            Done:{" "}
           </strong>
           {isDone ? (
             <svg
